@@ -3,7 +3,7 @@
 var express = require("express");
 var path = require("path");
 var fs = require("fs");
-const notes = []
+let notes = []
 var app = express();
 var PORT = 3000;
 app.use(express.static("public"));
@@ -25,19 +25,14 @@ app.get("/api/notes", function(req, res){
 app.post("/api/notes", function(req, res){
     console.log(req.body)
     fs.readFile("./db/db.json", function(err, data){
-        // if (err) throw err
-        var parseNote = data;
-        for (let i = 0; i < parseNote.length; i++) {
-            const element = JSON.parse(parseNote[i]);
-            notes.push(element)  
-        }
+        if (err) throw err
         notes.push(req.body)
         console.log("line 44", notes)   
-    })
-    fs.writeFile("./db/db.json", JSON.stringify(notes), function(err) {
-        if (err) throw err
-        console.log("it worked")
-        res.json(true)
+        fs.writeFile("./db/db.json", JSON.stringify(notes), function(err) {
+            if (err) throw err
+            console.log("it worked")
+            res.redirect("/notes")
+        })
     })
 })
 app.listen(PORT, function() {
